@@ -1,0 +1,1 @@
+# (Vanilla) Generative Adversarial Networks

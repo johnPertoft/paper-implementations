@@ -1,0 +1,11 @@
+.idea
+
+# Python
+*.pyc
+
+datasets
+log_dir
+
+# vim
+*.swp
+
