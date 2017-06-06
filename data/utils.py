@@ -13,12 +13,13 @@ def uint8_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
+# TODO: just use the new contrib.Dataset stuff instead
 def tfrecords_input_tensor(tfrecords_path, from_single_record, batch_size):
     with tf.name_scope("Input"):
         reader = tf.TFRecordReader()
         queue = tf.train.string_input_producer([tfrecords_path], shuffle=True, capacity=2000)
         _, serialized_example = reader.read(queue)
-        return tf.train.shuffle_batch(from_single_record(serialized_example),
+        return tf.train.shuffle_batch([from_single_record(serialized_example)],
                                       batch_size=batch_size,
                                       capacity=2000,
                                       num_threads=cpu_count(),

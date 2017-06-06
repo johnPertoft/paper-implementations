@@ -1,2 +1,1 @@
 from generative.run_training import run_training
-from generative.generate import generate

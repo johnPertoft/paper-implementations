@@ -10,7 +10,13 @@ from report import MarkdownDocumentBuilder
 
 
 class WGAN:
-    def __init__(self, X_sampled, latent_dim, global_step, weight_clip=0.01, n_critic_steps=5):
+    def __init__(self, X_sampled,
+                 latent_dim,
+                 global_step,
+                 weight_clip=0.01,
+                 n_critic_steps=5,
+                 architecture="mlp"):
+
         data_dim = X_sampled.get_shape().as_list()[1:]
         flat_data_dim = int(np.prod(data_dim))
 
@@ -18,15 +24,21 @@ class WGAN:
         # TODO: critic should not take flattened stuff
 
         def generator(Z):
-            # TODO: Always want sigmoid at end here?
-            return mlp(Z, layer_sizes=(128, 128, 128, flat_data_dim),
-                       intermediate_activation_fn=tf.nn.relu,
-                       final_activation_fn=tf.nn.sigmoid)
+            # TODO: Option for sigmoid/tanh at end here?
+            if architecture == "mlp":
+                return mlp(Z, layer_sizes=(128, 128, 128, flat_data_dim),
+                           intermediate_activation_fn=tf.nn.relu,
+                           final_activation_fn=tf.nn.sigmoid)
+            elif architecture == "conv":
+                pass
 
         def critic(X):
-            return mlp(X, layer_sizes=(128, 128, 128, 1),
-                       intermediate_activation_fn=tf.nn.relu,
-                       final_activation_fn=None)  # Note: No activation in final layer for Wasserstein GAN.
+            if architecture == "mlp":
+                return mlp(X, layer_sizes=(128, 128, 128, 1),
+                           intermediate_activation_fn=tf.nn.relu,
+                           final_activation_fn=None)  # Note: No activation in final layer for Wasserstein GAN.
+            elif architecture == "conv":
+                pass
 
         N = tf.placeholder_with_default(tf.constant(64), shape=[])
         Z = tf.placeholder_with_default(tf.random_normal((N, latent_dim), mean=0.0, stddev=1.0),

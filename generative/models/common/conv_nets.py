@@ -80,20 +80,20 @@ def _deconv_layer(t, num_filters,
     return activation_fn(h) if activation_fn is not None else h
 
 
-def conv_net_mnist(X):
+def conv_net_mnist(X, final_activation_fn):
     # TODO: Batch norm params
     h1 = _conv_layer(X, 256, activation_fn=leaky_relu)
     h2 = _conv_layer(h1, 128, activation_fn=leaky_relu)
     h3 = _conv_layer(h2, 64, activation_fn=leaky_relu)
-    out = tf.layers.dense(flatten(h3), 1, activation=tf.nn.sigmoid)  # TODO: Don't want sigmoid for wgan
+    out = tf.layers.dense(flatten(h3), 1, activation=final_activation_fn)
     return out
 
 
-def deconv_net_mnist(Z):
+def deconv_net_mnist(Z, final_activation_fn):
     # TODO: Batch norm params
     h1 = _initial_dense_and_reshape(Z, (7, 7, 256), activation_fn=tf.nn.relu)
     h2 = _deconv_layer(h1, 128, activation_fn=tf.nn.relu)
-    h3 = _deconv_layer(h2, 1, activation_fn=tf.nn.tanh)
+    h3 = _deconv_layer(h2, 1, activation_fn=final_activation_fn)
     return h3
 
 
