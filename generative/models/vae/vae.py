@@ -1,10 +1,9 @@
-from functools import partial
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.layers import flatten
 
 from generative.models.common import mlp
+from report import create_default_report
 
 
 class VAE:
@@ -52,11 +51,19 @@ class VAE:
 
                 self.optimization_step = (tf.train.AdamOptimizer(learning_rate=1e-4)
                                           .minimize(loss, global_step=global_step))
+                self.global_step = global_step
 
-        self.X_generated = bernoulli_probs
+        self.Z = Z
+        if bernoulli_probs.get_shape().ndims > 2:
+            self.X_generated = bernoulli_probs
+        else:
+            self.X_generated = tf.reshape(bernoulli_probs, [-1] + X_sampled.get_shape().as_list()[1:])
 
     def train_step(self, sess):
-        sess.run(self.optimization_step)
+        _, i = sess.run((self.optimization_step, self.global_step))
+        return i
 
-    def generate_results(self, sess):
-        pass
+    def generate_results(self, sess, output_dir, param_settings):
+        images = sess.run(self.X_generated, feed_dict={self.Z: np.random.randn(64, 25)})
+        create_default_report(output_dir, param_settings, images)
+

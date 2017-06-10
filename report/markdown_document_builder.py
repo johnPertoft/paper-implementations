@@ -27,3 +27,4 @@ class MarkdownDocumentBuilder:
     def build(self, path):
         with open(path, "w") as f:
             f.write(self.file_content)
+            return path
