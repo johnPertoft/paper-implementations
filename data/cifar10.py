@@ -56,17 +56,15 @@ def maybe_download_and_prepare(data_dir):
 
 
 def input_tensor(tfrecords_path, batch_size, return_label, as_float=True):
-    def from_single_record(serialized):
-        # Creates input tensors from a single record.
-
-        features = tf.parse_single_example(serialized, features={"image": tf.FixedLenFeature([], tf.string),
-                                                                         "label": tf.FixedLenFeature([], tf.int64)})
-        image = tf.reshape(tf.decode_raw(features["image"], tf.uint8), _IMG_SHAPE)
-        label = tf.cast(features["label"], tf.int32)
+    def from_records(serialized_examples):
+        features = tf.parse_example(serialized_examples, features={"image": tf.FixedLenFeature([], tf.string),
+                                                                   "label": tf.FixedLenFeature([], tf.int64)})
+        images = tf.reshape(tf.decode_raw(features["image"], tf.uint8), (-1,) + _IMG_SHAPE)
+        labels = tf.cast(features["label"], tf.int32)
 
         if as_float:
-            image = tf.cast(image, tf.float32) / 255.0
+            images = tf.cast(images, tf.float32) / 255.0
 
-        return [image, label] if return_label else [image]
+        return [images, labels] if return_label else [images]
 
-    return tfrecords_input_tensor(tfrecords_path, from_single_record, batch_size)
+    return tfrecords_input_tensor(tfrecords_path, from_records, batch_size)
