@@ -1,4 +1,5 @@
 from generative.models.gan.gan import GAN
+from generative.models.began.began import BEGAN
 from generative.models.vae.vae import VAE
 from generative.models.lsgan.lsgan import LSGAN
 from generative.models.wgan.wgan import WGAN

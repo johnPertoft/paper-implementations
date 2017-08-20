@@ -6,7 +6,7 @@ from PIL import Image
 from report import MarkdownDocumentBuilder
 
 
-def create_default_report(output_dir, param_settings, images):
+def create_default_report(output_dir, param_settings, images, return_builder=False):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -28,4 +28,8 @@ def create_default_report(output_dir, param_settings, images):
     md_builder.add_table(param_settings)
     md_builder.add_header("Generated Images")
     md_builder.add_images(relative_img_paths)
-    return md_builder.build(os.path.join(output_dir, "Results.md"))
+
+    if return_builder:
+        return md_builder
+    else:
+        return md_builder.build(os.path.join(output_dir, "Results.md"))
