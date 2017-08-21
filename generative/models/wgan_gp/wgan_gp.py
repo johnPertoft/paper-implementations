@@ -7,15 +7,21 @@ from report import create_default_report
 
 
 class WGAN_GP:
-    def __init__(self, X_sampled, latent_dim, global_step, wgan_lambda=10.0, n_critic_steps=5):
+    def __init__(self,
+                 X_sampled,
+                 latent_dim,
+                 global_step,
+                 generator_final_activation=tf.nn.sigmoid,
+                 wgan_lambda=10.0,
+                 n_critic_steps=5):
+
         flat_data_dim = int(np.prod(X_sampled.get_shape().as_list()[1:]))
         X_sampled_flat = flatten(X_sampled)
 
         def generator(Z):
-            # TODO: Always want sigmoid at end here?
             return mlp(Z, layer_sizes=(128, 128, 128, flat_data_dim),
                        intermediate_activation_fn=tf.nn.relu,
-                       final_activation_fn=tf.nn.sigmoid)
+                       final_activation_fn=generator_final_activation)
 
         def critic(X):
             return mlp(X, layer_sizes=(128, 128, 128, 1),

@@ -1,2 +1,2 @@
-from tf_utils.ExtendedMonitoredTrainingSession import ExtendedMonitoredTrainingSession
+from tf_utils.extended_monitored_training_session import ExtendedMonitoredTrainingSession
 from tf_utils.restored_session import restored_session
