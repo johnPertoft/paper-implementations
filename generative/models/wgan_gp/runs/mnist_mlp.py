@@ -18,17 +18,19 @@ if __name__ == "__main__":
                             ("N critic steps", 5),
                             ("N training steps", 500000)])
 
-    run_name = timestamp()  # TODO: Add run parameters to name
-
     mnist_tfrecords_path = maybe_download_and_prepare(os.path.join(os.path.expanduser("~"), "datasets"))
     X_sampled = input_tensor(mnist_tfrecords_path, batch_size=settings["Batch size"], return_label=False)
 
-    wgan_gp = WGAN_GP(X_sampled,
-                      latent_dim=settings["Latent dim"],
-                      global_step=tf.contrib.framework.get_or_create_global_step(),
-                      wgan_lambda=settings["lambda"],
-                      n_critic_steps=settings["N critic steps"])
+    wgan_gp = WGAN_GP.create("mnist",
+                             generator_architecture="mlp",
+                             critic_architecture="mlp",
+                             X_sampled=X_sampled,
+                             generator_final_activation_fn=tf.nn.sigmoid,
+                             latent_dim=settings["Latent dim"],
+                             wgan_lambda=settings["lambda"],
+                             n_critic_steps=settings["N critic steps"])
 
+    run_name = timestamp()  # TODO: Add run parameters to name
     model_name = WGAN_GP.__name__
     log_dir = os.path.join("log_dir", model_name, run_name)
     results_dir = os.path.join("results", model_name, run_name)
